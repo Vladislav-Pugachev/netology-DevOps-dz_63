@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Release.Name }}-backend
+  name: {{ .Release.Name }}-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-backend
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-backend
+    spec:
+      containers:
+      - image: {{ .Values.deploy.image }}:{{ .Values.deploy.tag }}
+        ports:
+          - containerPort: {{ .Values.deploy.port }}
+        imagePullPolicy: IfNotPresent
+        name: {{ .Release.Name }}-backend
+      imagePullSecrets:
+        - name: {{ .Release.Name }}-regcred

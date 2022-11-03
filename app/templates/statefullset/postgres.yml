@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-postgres
+spec:
+  serviceName: {{ .Release.Name }}-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-postgres
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-postgres
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-postgres
+          image: {{ .Values.statefull.image }}:{{ .Values.statefull.tag }}
+          ports:
+          - containerPort: {{ .Values.statefull.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-postgres-config
+          volumeMounts:
+            - name: {{ .Release.Name }}-postgres-prod-pv
+              mountPath: /usr/local/var/postgres
+      volumes:
+      - name: {{ .Release.Name }}-postgres-prod-pv
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-postgress-prod-pv-claim
